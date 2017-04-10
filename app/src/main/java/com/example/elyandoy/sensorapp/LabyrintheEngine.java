@@ -13,6 +13,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 public class LabyrintheEngine {
+    // PROPERTIES
     private Boule mBoule = null;
     public Boule getBoule() {
         return mBoule;
@@ -22,7 +23,7 @@ public class LabyrintheEngine {
         this.mBoule = pBoule;
     }
 
-    // Le labyrinthe
+    // The labyrinth
     private List<Bloc> mBlocks = null;
 
     private MainActivity mActivity = null;
@@ -38,15 +39,13 @@ public class LabyrintheEngine {
             float y = pEvent.values[1];
 
             if(mBoule != null) {
-                // On met à jour les coordonnées de la boule
+                // updates ball coordinates
                 RectF hitBox = mBoule.putXAndY(x, y);
 
-                // Pour tous les blocs du labyrinthe
                 for(Bloc block : mBlocks) {
-                    // On crée un nouveau rectangle pour ne pas modifier celui du bloc
+                    // creates a new rectangle to not modify the one of the bloc
                     RectF inter = new RectF(block.getRectangle());
                     if(inter.intersect(hitBox)) {
-                        // On agit différement en fonction du type de bloc
                         switch(block.getType()) {
                             case TROU:
                                 mActivity.showDialog(MainActivity.DEFEAT_DIALOG);
@@ -77,22 +76,31 @@ public class LabyrintheEngine {
         mAccelerometre = mManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
-    // Remet à zéro l'emplacement de la boule
+    /**
+     * Put the ball to the beginning
+     */
     public void reset() {
         mBoule.reset();
     }
 
-    // Arrête le capteur
+    /**
+     * Stops sensor
+     */
     public void stop() {
         mManager.unregisterListener(mSensorEventListener, mAccelerometre);
     }
 
-    // Redémarre le capteur
+    /**
+     * Launches sensor back
+     */
     public void resume() {
         mManager.registerListener(mSensorEventListener, mAccelerometre, SensorManager.SENSOR_DELAY_GAME);
     }
 
-    // Construit le labyrinthe
+    /**
+     * Build the labyrinth
+     * @return Array of Bloc that represents the labyrinth
+     */
     public List<Bloc> buildLabyrinthe() {
         mBlocks = new ArrayList<Bloc>();
         mBlocks.add(new Bloc(Type.TROU, 0, 0));

@@ -12,14 +12,15 @@ import android.content.DialogInterface;
 
 
 public class MainActivity extends AppCompatActivity {
-    // Identifiant de la boîte de dialogue de victoire
+    // PROPERTIES
+    // Victory alert dialog identifier
     public static final int VICTORY_DIALOG = 0;
-    // Identifiant de la boîte de dialogue de défaite
+    // Defeat alert dialog identifier
     public static final int DEFEAT_DIALOG = 1;
 
-    // Le moteur graphique du jeu
+    // Game's graphics engine
     private LabyrintheView mView = null;
-    // Le moteur physique du jeu
+    // Game's physics engine
     private LabyrintheEngine mEngine = null;
 
     @Override
@@ -39,22 +40,34 @@ public class MainActivity extends AppCompatActivity {
         mView.setBlocks(mList);
     }
 
+    /**
+     * When app is resumed, we launch back physics engine
+     */
     @Override
     protected void onResume() {
         super.onResume();
         mEngine.resume();
     }
 
+    /**
+     * When app is paused (leaving), we stop physics engine
+     */
     @Override
     protected void onPause() {
         super.onPause();
         mEngine.stop();
     }
 
+    /**
+     * Create and display a dialog alert
+     *
+     * @param id
+     * @return
+     */
     @Override
-    public Dialog onCreateDialog (int id) {
+    public Dialog onCreateDialog(int id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        switch(id) {
+        switch (id) {
             case VICTORY_DIALOG:
                 builder.setCancelable(false)
                         .setMessage("Bravo, vous avez gagné !")
@@ -84,9 +97,14 @@ public class MainActivity extends AppCompatActivity {
         return builder.create();
     }
 
+    /**
+     * Stops physics engine each time a dialog alert is launched
+     *
+     * @param id
+     * @param box
+     */
     @Override
-    public void onPrepareDialog (int id, Dialog box) {
-        // A chaque fois qu'une boîte de dialogue est lancée, on arrête le moteur physique
+    public void onPrepareDialog(int id, Dialog box) {
         mEngine.stop();
     }
 }

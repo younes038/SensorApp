@@ -12,6 +12,7 @@ import android.view.SurfaceView;
 import com.example.elyandoy.sensorapp.Models.*;
 
 public class LabyrintheView extends SurfaceView implements SurfaceHolder.Callback {
+    // PROPERTIES
     Boule mBoule;
     public Boule getBoule() {
         return mBoule;
@@ -47,12 +48,16 @@ public class LabyrintheView extends SurfaceView implements SurfaceHolder.Callbac
         mBoule = new Boule();
     }
 
+    /**
+     * Draws elements to show
+     * @param pCanvas
+     */
     @Override
     protected void onDraw(Canvas pCanvas) {
-        // Dessiner le fond de l'écran en premier
+        // draws background
         pCanvas.drawColor(Color.CYAN);
         if(mBlocks != null) {
-            // Dessiner tous les blocs du labyrinthe
+            // draws all blocs
             for(Bloc b : mBlocks) {
                 switch(b.getType()) {
                     case DEPART:
@@ -69,7 +74,7 @@ public class LabyrintheView extends SurfaceView implements SurfaceHolder.Callbac
             }
         }
 
-        // Dessiner la boule
+        // draws the ball
         if(mBoule != null) {
             mPaint.setColor(mBoule.getCouleur());
             pCanvas.drawCircle(mBoule.getX(), mBoule.getY(), Boule.RAYON, mPaint);
@@ -124,7 +129,7 @@ public class LabyrintheView extends SurfaceView implements SurfaceHolder.Callbac
                         mSurfaceHolder.unlockCanvasAndPost(canvas);
                 }
 
-                // Pour dessiner à 50 fps
+                // to draw at 50 fps
                 try {
                     Thread.sleep(20);
                 } catch (InterruptedException e) {}

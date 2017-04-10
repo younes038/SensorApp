@@ -101,7 +101,12 @@ public class Boule {
         mRectangle = new RectF();
     }
 
-    // Mettre à jour les coordonnées de la boule
+    /**
+     * Updates ball coordinates
+     * @param pX
+     * @param pY
+     * @return
+     */
     public RectF putXAndY(float pX, float pY) {
         mSpeedX += pX / COMPENSATEUR;
         if(mSpeedX > MAX_SPEED)
@@ -124,7 +129,9 @@ public class Boule {
         return mRectangle;
     }
 
-    // Remet la boule à sa position de départ
+    /**
+     * Put the ball to the beginning
+     */
     public void reset() {
         mSpeedX = 0;
         mSpeedY = 0;
