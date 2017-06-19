@@ -13,6 +13,11 @@ import com.example.elyandoy.sensorapp.Models.*;
 
 public class LabyrintheView extends SurfaceView implements SurfaceHolder.Callback {
     // PROPERTIES :
+    int mBColor = Color.CYAN;
+    public void setBackColor (int set) {
+        this.mBColor = set;
+    }
+
     Boule mBoule;
     public Boule getBoule() {
         return mBoule;
@@ -55,7 +60,7 @@ public class LabyrintheView extends SurfaceView implements SurfaceHolder.Callbac
     @Override
     protected void onDraw(Canvas pCanvas) {
         // draws background
-        pCanvas.drawColor(Color.CYAN);
+        pCanvas.drawColor(mBColor);
         if(mBlocks != null) {
             // draws all blocs
             for(Bloc b : mBlocks) {

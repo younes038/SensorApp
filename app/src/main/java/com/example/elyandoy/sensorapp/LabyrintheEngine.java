@@ -23,8 +23,8 @@ public class LabyrintheEngine {
 
     // The labyrinth
     private List<Bloc> mBlocks = null;
-
     private MainActivity mActivity = null;
+    private LabyrintheView mView = null;
 
     // Sensors
     private SensorManager mManager = null;
@@ -40,6 +40,8 @@ public class LabyrintheEngine {
         mActivity = pView;
         mManager = (SensorManager) mActivity.getBaseContext().getSystemService(Service.SENSOR_SERVICE);
         mAccelerometer = mManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mLight = mManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        mMagnetic = mManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
     }
 
     // ACCESSORS AND MUTATORS :
@@ -94,10 +96,30 @@ public class LabyrintheEngine {
                     y = pEvent.values[1];
                     z = pEvent.values[2];
 
+                    light = pEvent.values[0];
+
+                    if (x < -50) {
+                        mBoule.setCouleur(Color.GREEN);
+                    } else if (x < -30) {
+                        mBoule.setCouleur(Color.MAGENTA);
+                    } else {
+                        mBoule.setCouleur(Color.BLUE);
+                    }
+
                     break;
 
                 case Sensor.TYPE_LIGHT:
                     light = pEvent.values[0];
+
+                    if (light > 150) {
+                        mView.setBackColor(Color.YELLOW);
+                    } else if (light > 100) {
+                        mView.setBackColor(Color.GREEN);
+                    } else if (light > 50) {
+                        mView.setBackColor(Color.RED);
+                    } else {
+                        mView.setBackColor(Color.GRAY);
+                    }
                     break;
 
                 case Sensor.TYPE_STEP_DETECTOR:
@@ -137,6 +159,8 @@ public class LabyrintheEngine {
      */
     public void stop() {
         mManager.unregisterListener(mSensorEventListener, mAccelerometer);
+        mManager.unregisterListener(mSensorEventListener, mLight);
+        mManager.unregisterListener(mSensorEventListener, mMagnetic);
     }
 
     /**
@@ -144,6 +168,8 @@ public class LabyrintheEngine {
      */
     public void resume() {
         mManager.registerListener(mSensorEventListener, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+        mManager.registerListener(mSensorEventListener, mLight, SensorManager.SENSOR_DELAY_GAME);
+        mManager.registerListener(mSensorEventListener, mMagnetic, SensorManager.SENSOR_DELAY_GAME);
     }
 
     /**
