@@ -5,7 +5,11 @@ import java.util.List;
 
 import com.example.elyandoy.sensorapp.Models.*;
 import com.example.elyandoy.sensorapp.Models.Bloc.Type;
+
+import android.app.AlertDialog;
 import android.app.Service;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -13,68 +17,113 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 public class LabyrintheEngine {
-    // PROPERTIES
-    private Boule mBoule = null;
-    public Boule getBoule() {
-        return mBoule;
-    }
 
-    public void setBoule(Boule pBoule) {
-        this.mBoule = pBoule;
-    }
+    // PROPERTIES:
+    private Boule mBoule = null;
 
     // The labyrinth
     private List<Bloc> mBlocks = null;
 
     private MainActivity mActivity = null;
 
+    // Sensors
     private SensorManager mManager = null;
-    private Sensor mAccelerometre = null;
+    private Sensor mAccelerometer = null;
+    private Sensor mMagnetic = null;
+    private Sensor mLight = null;
 
+    /**
+     * Constructor
+     * @param pView
+     */
+    public LabyrintheEngine(MainActivity pView) {
+        mActivity = pView;
+        mManager = (SensorManager) mActivity.getBaseContext().getSystemService(Service.SENSOR_SERVICE);
+        mAccelerometer = mManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+
+    // ACCESSORS AND MUTATORS :
+    public Boule getBoule() {
+        return mBoule;
+    }
+    public void setBoule(Boule pBoule) {
+        this.mBoule = pBoule;
+    }
+
+
+    // SENSOR EVENT LISTENER :
     SensorEventListener mSensorEventListener = new SensorEventListener() {
 
         @Override
         public void onSensorChanged(SensorEvent pEvent) {
-            float x = pEvent.values[0];
-            float y = pEvent.values[1];
+            float x, y, z, light;
+            switch (pEvent.sensor.getType()) {
+                case Sensor.TYPE_ACCELEROMETER:
+                    x = pEvent.values[0];
+                    y = pEvent.values[1];
+                    z = pEvent.values[2];
 
-            if(mBoule != null) {
-                // updates ball coordinates
-                RectF hitBox = mBoule.putXAndY(x, y);
+                    if(mBoule != null) {
+                        // updates ball coordinates
+                        RectF hitBox = mBoule.putXAndY(x, y);
 
-                for(Bloc block : mBlocks) {
-                    // creates a new rectangle to not modify the one of the bloc
-                    RectF inter = new RectF(block.getRectangle());
-                    if(inter.intersect(hitBox)) {
-                        switch(block.getType()) {
-                            case TROU:
-                                mActivity.showDialog(MainActivity.DEFEAT_DIALOG);
+                        for(Bloc block : mBlocks) {
+                            // creates a new rectangle to not modify the one of the bloc
+                            RectF inter = new RectF(block.getRectangle());
+                            if(inter.intersect(hitBox)) {
+                                switch(block.getType()) {
+                                    case TROU:
+                                        mActivity.showDialog(MainActivity.DEFEAT_DIALOG);
+                                        break;
+
+                                    case DEPART:
+                                        break;
+
+                                    case ARRIVEE:
+                                        mActivity.showDialog(MainActivity.VICTORY_DIALOG);
+                                        break;
+                                }
                                 break;
-
-                            case DEPART:
-                                break;
-
-                            case ARRIVEE:
-                                mActivity.showDialog(MainActivity.VICTORY_DIALOG);
-                                break;
+                            }
                         }
-                        break;
                     }
-                }
+                    break;
+
+                case Sensor.TYPE_MAGNETIC_FIELD:
+                    x = pEvent.values[0];
+                    y = pEvent.values[1];
+                    z = pEvent.values[2];
+
+                    break;
+
+                case Sensor.TYPE_LIGHT:
+                    light = pEvent.values[0];
+                    break;
+
+                case Sensor.TYPE_STEP_DETECTOR:
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                    builder.setCancelable(false)
+                            .setMessage("Il semble que vous êtes en mouvement, faites attention à ne pas être distrait")
+                            .setTitle("Attention !")
+                            .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            });
+                    break;
+
+                default:
+                    break;
             }
         }
 
         @Override
-        public void onAccuracyChanged(Sensor pSensor, int pAccuracy) {
-
-        }
+        public void onAccuracyChanged(Sensor pSensor, int pAccuracy) {}
     };
 
-    public LabyrintheEngine(MainActivity pView) {
-        mActivity = pView;
-        mManager = (SensorManager) mActivity.getBaseContext().getSystemService(Service.SENSOR_SERVICE);
-        mAccelerometre = mManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-    }
+
+    // METHODS :
 
     /**
      * Put the ball to the beginning
@@ -87,14 +136,14 @@ public class LabyrintheEngine {
      * Stops sensor
      */
     public void stop() {
-        mManager.unregisterListener(mSensorEventListener, mAccelerometre);
+        mManager.unregisterListener(mSensorEventListener, mAccelerometer);
     }
 
     /**
      * Launches sensor back
      */
     public void resume() {
-        mManager.registerListener(mSensorEventListener, mAccelerometre, SensorManager.SENSOR_DELAY_GAME);
+        mManager.registerListener(mSensorEventListener, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
     }
 
     /**

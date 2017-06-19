@@ -1,8 +1,15 @@
 package com.example.elyandoy.sensorapp;
 
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.example.elyandoy.sensorapp.Models.*;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognition;
 
 import java.util.List;
 
@@ -10,9 +17,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    // PROPERTIES :
+    public GoogleApiClient mApiClient;
 
-public class MainActivity extends AppCompatActivity {
-    // PROPERTIES
     // Victory alert dialog identifier
     public static final int VICTORY_DIALOG = 0;
     // Defeat alert dialog identifier
@@ -38,6 +46,31 @@ public class MainActivity extends AppCompatActivity {
 
         List<Bloc> mList = mEngine.buildLabyrinthe();
         mView.setBlocks(mList);
+
+        mApiClient = new GoogleApiClient.Builder(this)
+                .addApi(ActivityRecognition.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        mApiClient.connect();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Intent intent = new Intent( this, ActivityRecognizedService.class );
+        PendingIntent pendingIntent = PendingIntent.getService( this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT );
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates( mApiClient,500, pendingIntent );
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 
     /**
@@ -60,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Create and display a dialog alert
-     *
      * @param id
      * @return
      */

@@ -12,7 +12,7 @@ import android.view.SurfaceView;
 import com.example.elyandoy.sensorapp.Models.*;
 
 public class LabyrintheView extends SurfaceView implements SurfaceHolder.Callback {
-    // PROPERTIES
+    // PROPERTIES :
     Boule mBoule;
     public Boule getBoule() {
         return mBoule;
@@ -122,7 +122,7 @@ public class LabyrintheView extends SurfaceView implements SurfaceHolder.Callbac
                 try {
                     canvas = mSurfaceHolder.lockCanvas();
                     synchronized (mSurfaceHolder) {
-                        draw(canvas);
+                        onDraw(canvas);
                     }
                 } finally {
                     if (canvas != null)

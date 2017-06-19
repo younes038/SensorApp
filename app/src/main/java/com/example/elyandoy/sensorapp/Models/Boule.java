@@ -4,26 +4,32 @@ import android.graphics.Color;
 import android.graphics.RectF;
 
 public class Boule {
+    // PROPERTIES :
     // Rayon de la boule
-    public static final int RAYON = 10;
-
+    public static final int RAYON = 30;
     // Couleur de la boule
     private int mCouleur = Color.GREEN;
     public int getCouleur() {
         return mCouleur;
     }
-
+    public void setCouleur(int color) {
+        this.mCouleur = color;
+    }
     // Vitesse maximale autorisée pour la boule
     private static final float MAX_SPEED = 20.0f;
-
     // Permet à la boule d'accélérer moins vite
-    private static final float COMPENSATEUR = 8.0f;
-
+    private static final float COMPENSATEUR = 100.0f;
     // Utilisé pour compenser les rebonds
     private static final float REBOND = 1.75f;
-
     // Le rectangle qui correspond à la position de départ de la boule
     private RectF mInitialRectangle = null;
+
+    /**
+     * Constructor
+     */
+    public Boule() {
+        mRectangle = new RectF();
+    }
 
     // A partir du rectangle initial on détermine la position de la boule
     public void setInitialRectangle(RectF pInitialRectangle) {
@@ -36,7 +42,7 @@ public class Boule {
     private RectF mRectangle = null;
 
     // Coordonnées en x
-    private float mX;
+    private float mX = 0;
     public float getX() {
         return mX;
     }
@@ -55,7 +61,7 @@ public class Boule {
     }
 
     // Coordonnées en y
-    private float mY;
+    private float mY = 0;
     public float getY() {
         return mY;
     }
@@ -95,10 +101,6 @@ public class Boule {
     private int mWidth = -1;
     public void setWidth(int pWidth) {
         this.mWidth = pWidth;
-    }
-
-    public Boule() {
-        mRectangle = new RectF();
     }
 
     /**
